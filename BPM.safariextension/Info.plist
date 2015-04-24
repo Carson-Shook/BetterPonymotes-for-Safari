@@ -15,7 +15,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>64.207</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>1.1</string>
 	<key>Chrome</key>
 	<dict>
 		<key>Database Quota</key>
@@ -60,5 +60,7 @@
 	</dict>
 	<key>Update Manifest URL</key>
 	<string>http://carson-shook.github.io/BetterPonymotes-for-Safari/UpdateManifest.plist</string>
+	<key>Website</key>
+	<string>http://carson-shook.github.io/BetterPonymotes-for-Safari</string>
 </dict>
 </plist>

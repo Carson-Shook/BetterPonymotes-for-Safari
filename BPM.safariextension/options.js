@@ -41,9 +41,9 @@ var bpm_utils = {
             return "firefox-ext";
         } else if(_bpm_global("chrome") !== undefined && chrome.extension !== undefined) {
             return "chrome-ext";
-        } else if(_bpm_global("safari") {
+        } else if(_bpm_global("safari")) {
             return "safari-ext";
-        } (else {
+        } else {
             console.log("BPM: ERROR: Unknown platform!");
             return "unknown";
         }
