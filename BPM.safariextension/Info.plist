@@ -58,5 +58,7 @@
 			<string>All</string>
 		</dict>
 	</dict>
+	<key>Update Manifest URL</key>
+	<string>http://carson-shook.github.io/BetterPonymotes-for-Safari/UpdateManifest.plist</string>
 </dict>
 </plist>
