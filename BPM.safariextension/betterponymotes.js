@@ -139,7 +139,7 @@ if(self.on) {
     platform = "firefox-ext";
 } else if(find_global("chrome") && chrome.extension) {
     platform = "chrome-ext";
-} else if(find_global("safari")) {
+} else if(find_global("safari") && window.name === "") {
     platform = "safari-ext";
 } else {
     log_error("Unknown platform! Your installation is badly broken.");
