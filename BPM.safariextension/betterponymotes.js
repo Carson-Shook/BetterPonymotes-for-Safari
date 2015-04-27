@@ -1,6 +1,7 @@
 /*******************************************************************************
 **
-** This file is part of BetterPonymotes for Safari.
+** This file is part of BetterPonymotes.
+** Copyright (c) 2012-2015 Typhos.
 ** Copyright (c) 2015 TwilightShadow1.
 **
 ** This program is free software: you can redistribute it and/or modify it

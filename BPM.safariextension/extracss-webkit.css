@@ -1,6 +1,7 @@
 /*******************************************************************************
 **
-** This file is part of BetterPonymotes for Safari.
+** This file is part of BetterPonymotes.
+** Copyright (c) 2012-2015 Typhos.
 ** Copyright (c) 2015 TwilightShadow1.
 **
 ** This program is free software: you can redistribute it and/or modify it
@@ -405,10 +406,11 @@
 .bpflag-rotate, .bpflag-lrotate {-webkit-animation:zspin 2s infinite linear;image-rendering:-moz-crisp-edges}
 .bpflag-rrotate, .bpflag-lrrotate {-webkit-animation:znips 2s infinite linear;image-rendering:-moz-crisp-edges}
 
-.md { overflow-y: hidden !important }
+/* Was causing the top of superscripted post elements to be hidden */
+/*.md { overflow-y: hidden !important }
 .usertext-edit .md { overflow-y: inherit !important; }
 .usertext-edit .md.RESDialogContents { overflow-y: hidden !important; }
-.titlebox .md { overflow-y: inherit !important; }
+.titlebox .md { overflow-y: inherit !important; }*/
 
 @-webkit-keyframes intensifies {
     0% { left: 0px; top: 0px; }
