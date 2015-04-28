@@ -406,11 +406,14 @@
 .bpflag-rotate, .bpflag-lrotate {-webkit-animation:zspin 2s infinite linear;image-rendering:-moz-crisp-edges}
 .bpflag-rrotate, .bpflag-lrrotate {-webkit-animation:znips 2s infinite linear;image-rendering:-moz-crisp-edges}
 
-/* Was causing the top of superscripted post elements to be hidden */
-/*.md { overflow-y: hidden !important }
+.md { overflow-y: hidden !important; }
 .usertext-edit .md { overflow-y: inherit !important; }
 .usertext-edit .md.RESDialogContents { overflow-y: hidden !important; }
-.titlebox .md { overflow-y: inherit !important; }*/
+.titlebox .md { overflow-y: inherit !important; }
+
+.md>:first-child, .md .-cells>:first-child, .md .-lists>:first-child, .md .-blocks>:first-child, .md .-headers>:first-child, .md h1>:first-child, .md h2>:first-child, .md h3>:first-child, .md h4>:first-child, .md h5>:first-child, .md h6>:first-child, .md th>:first-child, .md td>:first-child, .md ul>:first-child, .md ol>:first-child, .md .-lists>:first-child, .md pre>:first-child, .md blockquote>:first-child, .md table>:first-child, .md p>:first-child, .md ul>:first-child, .md ol>:first-child {
+    margin-top: 5px;
+}
 
 @-webkit-keyframes intensifies {
     0% { left: 0px; top: 0px; }

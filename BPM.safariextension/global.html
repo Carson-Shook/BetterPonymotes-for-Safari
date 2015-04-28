@@ -27,6 +27,7 @@
         <script src="pref-setup.js" type="text/javascript"></script>
         <script type="text/javascript" defer>
             
+            var request = null;
             var timers = null;
             var storage = localStorage;
             
@@ -41,25 +42,22 @@
                 write_json: function(key, data) { storage[key] = JSON.stringify(data); },
                                             
                 download_file: function(done, url, callback) {
-                    if(!request) {
-                        console.warn("BPM: WARNING: Unable to download file due to broken installation");
-                        done();
-                        return;
-                    }
-                                            
-                    request.Request({
-                        url: url,
-                        headers: {"User-Agent": "BetterPonymotes Client CSS Updater (/u/Typhos)"},
-                        onComplete: function(response) {
+                    var request = new XMLHttpRequest();
+                    request.onreadystatechange = function() {
+                        if(request.readyState === 4) {
                             done();
-                            var type = response.headers["Content-Type"];
-                            if(response.status === 200 && type == "text/css") {
-                                callback(response.text);
+                            var type = request.getResponseHeader("Content-Type");
+                            if(request.status === 200 && type == "text/css") {
+                                callback(request.responseText);
                             } else {
-                                console.log("BPM: ERROR: Reddit returned HTTP status " + response.status + " for " + url + " (type: " + type + ")");
+                                console.log("BPM: ERROR: Reddit returned HTTP status " + request.status + " for " + url + " (type: " + type + ")");
                             }
                         }
-                    }).get();
+                    };
+                    request.open("GET", url, true);
+                    // Not permitted because Chrome sucks
+                    //request.setRequestHeader("User-Agent", "BetterPonymotes Client CSS Updater (/u/Typhos)");
+                    request.send();
                 },
                                             
                 set_timeout: (timers ? timers.setTimeout : function() {
@@ -81,6 +79,7 @@
             safari.extension.settings.addEventListener("change", prefListener, false);
             
             safari.application.addEventListener("message", function(message) {
+                                                console.log(message);
                     switch(message.message.method) {
                         case "get_initdata":
                             var reply = {"method": "initdata"};
