@@ -412,7 +412,7 @@
 .titlebox .md { overflow-y: inherit !important; }
 
 .md>:first-child, .md .-cells>:first-child, .md .-lists>:first-child, .md .-blocks>:first-child, .md .-headers>:first-child, .md h1>:first-child, .md h2>:first-child, .md h3>:first-child, .md h4>:first-child, .md h5>:first-child, .md h6>:first-child, .md th>:first-child, .md td>:first-child, .md ul>:first-child, .md ol>:first-child, .md .-lists>:first-child, .md pre>:first-child, .md blockquote>:first-child, .md table>:first-child, .md p>:first-child, .md ul>:first-child, .md ol>:first-child {
-    margin-top: 5px;
+    margin-top: 5px !important;
 }
 
 @-webkit-keyframes intensifies {
