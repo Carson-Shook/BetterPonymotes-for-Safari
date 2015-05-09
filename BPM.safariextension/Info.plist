@@ -5,7 +5,7 @@
 	<key>Author</key>
 	<string>TwilightShadow1</string>
 	<key>Builder Version</key>
-	<string>10600.5.17</string>
+	<string>10600.6.3</string>
 	<key>CFBundleDisplayName</key>
 	<string>BetterPonymotes</string>
 	<key>CFBundleIdentifier</key>
@@ -13,9 +13,9 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>64.208</string>
+	<string>64.210</string>
 	<key>CFBundleVersion</key>
-	<string>1.1.4</string>
+	<string>1.1.5</string>
 	<key>Chrome</key>
 	<dict>
 		<key>Database Quota</key>
