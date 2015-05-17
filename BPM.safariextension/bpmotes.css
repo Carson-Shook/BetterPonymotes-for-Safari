@@ -209,6 +209,8 @@
     float: left;
     width: 60px;
     margin: 4px;
+    
+    visibility: inherit;
 }
 
 /* Search input */
