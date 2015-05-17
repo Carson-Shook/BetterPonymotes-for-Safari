@@ -204,6 +204,13 @@
     visibility: inherit;
 }
 
+/* Tag combobox */
+#bpm-sb-tagcombobox {
+    float: left;
+    width: 60px;
+    margin: 4px;
+}
+
 /* Search input */
 #bpm-sb-input {
     border-width: 2px !important;

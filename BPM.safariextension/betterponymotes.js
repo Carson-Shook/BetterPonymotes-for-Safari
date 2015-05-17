@@ -691,6 +691,7 @@ function Store() {
     this.custom_css = null; // Accessed by init_css() so not really private
 
     this._sr_array = null;
+    this._tag_array = null;
     this._de_map = null;
     this._we_map = null;
 
@@ -706,6 +707,7 @@ Store.prototype = {
         log_debug("Got prefs");
         this.prefs = prefs;
         this._make_sr_array();
+        this._make_tag_array();
         this._de_map = this._make_emote_map(prefs.disabledEmotes);
         this._we_map = this._make_emote_map(prefs.whitelistedEmotes);
 
@@ -867,6 +869,16 @@ Store.prototype = {
         }
     },
 
+    _make_tag_array: function() {
+        this._tag_array = [];
+        for(var id in tag_id2name) {
+            this._tag_array[id] = tag_id2name[id];
+        }
+        if(this._tag_array.indexOf(undefined) > -1) {
+            log_error("tag_array has holes; installation or prefs are broken!");
+        }
+    },
+ 
     _make_emote_map: function(list) {
         var map = {};
         for(var i = 0; i < list.length; i++) {
@@ -1304,6 +1316,7 @@ var is_compact = ends_with(document.location.pathname, ".compact") ||
 // Search box elements
 var sb_container = null;
 var sb_dragbox = null;
+var sb_tagcombobox = null;
 var sb_input = null;
 var sb_resultinfo = null;
 var sb_close = null;
@@ -1349,6 +1362,7 @@ function inject_search_box() {
         '<div id="bpm-sb-container" tabindex="100">',
           '<div id="bpm-sb-toprow">',
             '<span id="bpm-sb-dragbox"></span>',
+            '<select id="bpm-sb-tagcombobox" onchange="">',
             '<input id="bpm-sb-input" type="search" placeholder="Search"/>',
             '<span id="bpm-sb-resultinfo"></span>',
             '<span id="bpm-sb-close"></span>',
@@ -1392,6 +1406,7 @@ function inject_search_box() {
     sb_container = document.getElementById("bpm-sb-container");
     sb_dragbox = document.getElementById("bpm-sb-dragbox");
     sb_input = document.getElementById("bpm-sb-input");
+    sb_tagcombobox = document.getElementById("bpm-sb-tagcombobox");
     sb_resultinfo = document.getElementById("bpm-sb-resultinfo");
     sb_close = document.getElementById("bpm-sb-close");
     sb_tabframe = document.getElementById("bpm-sb-tabframe");
@@ -1526,6 +1541,23 @@ function init_search_ui(store) {
         store.prefs.searchBoxInfo[3] = sb_height;
         store.sync_key("searchBoxInfo");
     });
+ 
+    // Set up the tag combobox menu
+    var option = document.createElement("option");
+    option.value = "";
+    option.text = "Tags";
+    option.setAttribute("selected", null);
+    sb_tagcombobox.add(option);
+    for (var id in store._tag_array) {
+        var option = document.createElement("option");
+        option.value = store._tag_array[id];
+        option.text = option.value;
+        sb_tagcombobox.add(option);
+    }
+    sb_tagcombobox.onchange = function(){
+        sb_input.value = sb_input.value + " " + sb_tagcombobox.value;
+        update_search_results(store);
+    };
 }
 
 function set_sb_position(left, top) {
