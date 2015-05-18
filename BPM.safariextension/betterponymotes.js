@@ -1556,6 +1556,7 @@ function init_search_ui(store) {
     }
     sb_tagcombobox.onchange = function(){
         sb_input.value = sb_input.value + " " + sb_tagcombobox.value;
+        sb_tagcombobox.selectedIndex = "0"
         update_search_results(store);
     };
 }
