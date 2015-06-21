@@ -691,6 +691,7 @@ function Store() {
     this.custom_css = null; // Accessed by init_css() so not really private
 
     this._sr_array = null;
+    this._tag_array = null;
     this._de_map = null;
     this._we_map = null;
 
@@ -706,6 +707,7 @@ Store.prototype = {
         log_debug("Got prefs");
         this.prefs = prefs;
         this._make_sr_array();
+        this._make_tag_array();
         this._de_map = this._make_emote_map(prefs.disabledEmotes);
         this._we_map = this._make_emote_map(prefs.whitelistedEmotes);
 
@@ -867,6 +869,16 @@ Store.prototype = {
         }
     },
 
+    _make_tag_array: function() {
+        this._tag_array = [];
+        for(var id in tag_id2name) {
+            this._tag_array[id] = tag_id2name[id];
+        }
+        if(this._tag_array.indexOf(undefined) > -1) {
+            log_error("tag_array has holes; installation or prefs are broken!");
+        }
+    },
+ 
     _make_emote_map: function(list) {
         var map = {};
         for(var i = 0; i < list.length; i++) {
@@ -1304,6 +1316,7 @@ var is_compact = ends_with(document.location.pathname, ".compact") ||
 // Search box elements
 var sb_container = null;
 var sb_dragbox = null;
+var sb_tagcombobox = null;
 var sb_input = null;
 var sb_resultinfo = null;
 var sb_close = null;
@@ -1349,6 +1362,7 @@ function inject_search_box() {
         '<div id="bpm-sb-container" tabindex="100">',
           '<div id="bpm-sb-toprow">',
             '<span id="bpm-sb-dragbox"></span>',
+            '<select id="bpm-sb-tagcombobox" onchange="">',
             '<input id="bpm-sb-input" type="search" placeholder="Search"/>',
             '<span id="bpm-sb-resultinfo"></span>',
             '<span id="bpm-sb-close"></span>',
@@ -1392,6 +1406,7 @@ function inject_search_box() {
     sb_container = document.getElementById("bpm-sb-container");
     sb_dragbox = document.getElementById("bpm-sb-dragbox");
     sb_input = document.getElementById("bpm-sb-input");
+    sb_tagcombobox = document.getElementById("bpm-sb-tagcombobox");
     sb_resultinfo = document.getElementById("bpm-sb-resultinfo");
     sb_close = document.getElementById("bpm-sb-close");
     sb_tabframe = document.getElementById("bpm-sb-tabframe");
@@ -1526,6 +1541,24 @@ function init_search_ui(store) {
         store.prefs.searchBoxInfo[3] = sb_height;
         store.sync_key("searchBoxInfo");
     });
+ 
+    // Set up the tag combobox menu
+    var option = document.createElement("option");
+    option.value = "";
+    option.text = "Tags";
+    option.setAttribute("selected", null);
+    sb_tagcombobox.add(option);
+    for (var id in store._tag_array) {
+        var option = document.createElement("option");
+        option.value = store._tag_array[id];
+        option.text = option.value;
+        sb_tagcombobox.add(option);
+    }
+    sb_tagcombobox.onchange = function(){
+        sb_input.value = sb_input.value + " " + sb_tagcombobox.value;
+        sb_tagcombobox.selectedIndex = "0"
+        update_search_results(store);
+    };
 }
 
 function set_sb_position(left, top) {
@@ -1719,9 +1752,10 @@ function display_search_results(store, results) {
 }
 
 /*
- * Injects the "emotes" button onto Reddit.
+ * Injects the "emotes" button onto Reddit (or voat).
  */
-function inject_emotes_button(store, usertext_edits) {
+function inject_emotes_button(store, usertext_edits, FirstRun) {
+    var NotMutated = FirstRun;
     for(var i = 0; i < usertext_edits.length; i++) {
         var existing = usertext_edits[i].getElementsByClassName("bpm-search-toggle");
         var textarea = usertext_edits[i].getElementsByTagName("textarea")[0];
@@ -1743,6 +1777,8 @@ function inject_emotes_button(store, usertext_edits) {
             if(is_compact) {
                 // Blend in with the other mobile buttons
                 button.classList.add("newbutton");
+            } else if (document.location.hostname == "voat.co") {
+                button.classList.add("btn-whoaverse-paging");
             }
             button.textContent = "emotes";
             // Since we come before the save button in the DOM, we tab first,
@@ -1757,12 +1793,29 @@ function inject_emotes_button(store, usertext_edits) {
             // way to the right, next to the "formatting help" link. However,
             // this breaks rather badly on .compact display (sort of merging
             // into it), so do something different there.
-            if(is_compact) {
-                var button_bar = find_class(usertext_edits[i], "usertext-buttons");
-                button_bar.insertBefore(button, find_class(button_bar, "status"));
+            if(is_compact || (document.location.hostname == "voat.co")) {
+                try {
+                    var button_bar = find_class(usertext_edits[i], "usertext-buttons");
+                    button_bar.insertBefore(button, find_class(button_bar, "status"));
+                } catch(err) {
+                    console.log(err);
+                }
             } else {
                 var bottom_area = find_class(usertext_edits[i], "bottom-area");
                 bottom_area.insertBefore(button, bottom_area.firstChild);
+            }
+            if(document.location.hostname == "voat.co" && !NotMutated) {
+                try {
+                    usertext_edits[i].appendChild(button);
+                } catch(err) {
+                    console.log(err);
+                }
+ 
+            }
+            if (FirstRun && document.location.hostname == "voat.co") {
+                var siteTable = document.getElementById("siteTable");
+                siteTable.appendChild(button);
+                FirstRun = false;
             }
         }
     }
@@ -2314,7 +2367,7 @@ function block_click(store, event) {
 function run_reddit(store, expand_emotes) {
     init_search_box(store);
     var usertext_edits = slice(document.getElementsByClassName("usertext-edit"));
-    inject_emotes_button(store, usertext_edits);
+    inject_emotes_button(store, usertext_edits, true);
 
     // Initial pass- show all emotes currently on the page.
     var posts = slice(document.getElementsByClassName("md"));
@@ -2359,8 +2412,16 @@ function run_reddit(store, expand_emotes) {
             }
 
             // TODO: move up in case we're inside it?
-            var usertext_edits = slice(root.getElementsByClassName("usertext-edit"));
-            inject_emotes_button(store, usertext_edits);
+            if (document.location.hostname != "voat.co") {
+                var usertext_edits = slice(root.getElementsByClassName("usertext-edit"));
+                inject_emotes_button(store, usertext_edits, false);
+            }
+            // Replies seem to be working correctly. There are still some bugs to work out
+            // due to Voat's weird formmating, but I'll see what I can do.
+            else if (document.location.hostname == "voat.co") {
+                var usertext_replies = slice(root.getElementsByClassName("row"));
+                inject_emotes_button(store, usertext_replies, false);
+            }
         }
     });
 }
@@ -2719,7 +2780,7 @@ function init_css(store) {
 function main() {
     log_info("Starting up");
     setup_browser({"prefs": 1, "customcss": 1}, function(store) {
-        if(document.location && document.location.hostname && ends_with(document.location.hostname, "reddit.com")) {
+        if(document.location && document.location.hostname && (ends_with(document.location.hostname, "reddit.com")) || ends_with(document.location.hostname, "voat.co")) {
             reddit_main(store);
         } else {
             global_main(store);
