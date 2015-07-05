@@ -79,7 +79,7 @@
             safari.extension.settings.addEventListener("change", prefListener, false);
             
             safari.application.addEventListener("message", function(message) {
-                                                console.log(message);
+
                     switch(message.message.method) {
                         case "get_initdata":
                             var reply = {"method": "initdata"};
